@@ -1,0 +1,10 @@
+name: LimitedLife
+version: '${project.version}'
+main: me.rosux.limitedlife.LimitedLife
+api-version: 1.18
+
+commands:
+  limitedlife:
+    description: Commands for limitedlife™
+    permission: limitedlife.admin
+    permission-message: You do not have permission to use this command.

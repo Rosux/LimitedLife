@@ -54,10 +54,20 @@ public class LifeCommand implements CommandExecutor {
     public static void sendHelp(Player player) {
         player.sendMessage(ChatColor.DARK_RED + "---------------limited♥Life---------------");
         player.sendMessage(ChatColor.WHITE + "/limitedlife (brings up this)");
-        player.sendMessage(ChatColor.WHITE + "/limitedlife lives <player>");
+        player.sendMessage(ChatColor.WHITE + "/limitedlife lives");
         player.sendMessage(ChatColor.WHITE + "/limitedlife set <player> <lives>");
         player.sendMessage(ChatColor.WHITE + "/limitedlife add <player> <lives>");
         player.sendMessage(ChatColor.WHITE + "/limitedlife remove <player> <lives>");
+        player.sendMessage(ChatColor.DARK_RED + "------------------------------------------");
+    }
+    public static void cantFindPlayer(Player player) {
+        player.sendMessage(ChatColor.DARK_RED + "---------------limited♥Life---------------");
+        player.sendMessage(ChatColor.WHITE + "Couldn't find the player you specified (perhaps never joined)");
+        player.sendMessage(ChatColor.DARK_RED + "------------------------------------------");
+    }
+    public static void success(Player player) {
+        player.sendMessage(ChatColor.DARK_RED + "---------------limited♥Life---------------");
+        player.sendMessage(ChatColor.WHITE + "Success");
         player.sendMessage(ChatColor.DARK_RED + "------------------------------------------");
     }
 
@@ -65,19 +75,22 @@ public class LifeCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender; // user of the command
+            Player target;
             int lives; // lives to add/remove
-            if (args.length <= 1 && !args[0].equalsIgnoreCase("lives")) {
+
+            if (args.length == 0) {
                 sendHelp(player);
                 return false;
             }
-            Player target = Bukkit.getPlayer(args[1]); // targeted user in the second argument
+            if(args.length > 2){
+                target = Bukkit.getPlayer(args[1]); // targeted user in the second argument
+            }else{
+                target = null;
+            }
+
             switch (args[0].toLowerCase()) {
                 case "lives":
-                    if (args.length != 3) {
-                        sendLives(player, LimitedLife.mapLives.get(player));
-                    }else{
-                        sendLives(player, LimitedLife.mapLives.get(target));
-                    }
+                    sendLives(player, LimitedLife.mapLives.get(player.getUniqueId()));
                     break;
                 case "set":
                     if (args.length != 3) {
@@ -89,7 +102,11 @@ public class LifeCommand implements CommandExecutor {
                     } catch (NumberFormatException e) {
                         lives = 50;
                     } // string to int for third arg
-                    LimitedLife.mapLives.put(target, lives);
+                    if(target != null){
+                        LimitedLife.mapLives.put(target.getUniqueId(), lives);
+                    }else{
+                        cantFindPlayer(player);
+                    }
                     break;
                 case "add":
                     if (args.length != 3) {
@@ -101,7 +118,11 @@ public class LifeCommand implements CommandExecutor {
                     } catch (NumberFormatException e) {
                         lives = 0;
                     } // string to int for third arg
-                    LimitedLife.mapLives.put(target, LimitedLife.mapLives.get(target) + lives);
+                    if(target != null){
+                        LimitedLife.mapLives.put(target.getUniqueId(), LimitedLife.mapLives.get(target.getUniqueId()) + lives);
+                    }else{
+                        cantFindPlayer(player);
+                    }
                     break;
                 case "remove":
                     if (args.length != 3) {
@@ -113,7 +134,11 @@ public class LifeCommand implements CommandExecutor {
                     } catch (NumberFormatException e) {
                         lives = 0;
                     } // string to int for third arg
-                    LimitedLife.mapLives.put(target, LimitedLife.mapLives.get(target) - lives);
+                    if(target != null){
+                        LimitedLife.mapLives.put(target.getUniqueId(), LimitedLife.mapLives.get(target.getUniqueId()) - lives);
+                    }else{
+                        cantFindPlayer(player);
+                    }
                     break;
                 default:
                     sendHelp(player);

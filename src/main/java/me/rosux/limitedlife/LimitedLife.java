@@ -4,9 +4,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
+import java.util.UUID;
 
 public final class LimitedLife extends JavaPlugin implements Listener {
-    public static HashMap<Player, Integer> mapLives = new HashMap<>();
+    public static HashMap<UUID, Integer> mapLives = new HashMap<>();
     @Override
     public void onEnable() {
         // Plugin startup logic

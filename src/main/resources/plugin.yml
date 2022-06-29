@@ -2,9 +2,14 @@ name: LimitedLife
 version: '${project.version}'
 main: me.rosux.limitedlife.LimitedLife
 api-version: 1.18
+website: https://github.com/Rosux
 
 commands:
   limitedlife:
+    aliases: ll
     description: Commands for limitedlife™
     permission: limitedlife.admin
     permission-message: You do not have permission to use this command.
+    send-namespaced: false
+    tab-complete: 0
+    log: true

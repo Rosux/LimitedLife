@@ -7,41 +7,43 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.util.UUID;
-
 public class eventListener implements Listener {
     int defaultLives = 50;
     int lives;
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {/*e.getPlayer()*/
-        if(!LimitedLife.mapLives.containsKey(e.getPlayer().getUniqueId())){
-            lives = defaultLives;
-            LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), defaultLives);
-            LifeCommand.sendLives(e.getPlayer(), lives);
-        }else{
-            lives = LimitedLife.mapLives.get(e.getPlayer().getUniqueId());
-            LifeCommand.sendLives(e.getPlayer(), lives);
+    public void onJoin(PlayerJoinEvent e) {
+
+
+        if(LimitedLife.instance.getConfig().getString("player." + e.getPlayer().getUniqueId().toString()) == null){ ////////////////
+            LimitedLife.instance.getConfig().set("player." + e.getPlayer().getUniqueId().toString(), defaultLives); ////////////////
         }
+        LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), LimitedLife.instance.getConfig().getInt("player." + e.getPlayer().getUniqueId().toString())); ////////////////
+
+
+        lives = LimitedLife.mapLives.get(e.getPlayer().getUniqueId());
+        LifeCommand.sendLives(e.getPlayer(), lives);
         if(lives <= 0){
             e.getPlayer().setGameMode(GameMode.SPECTATOR);
             LifeCommand.noLifes(e.getPlayer());
         }
+        LimitedLife.instance.saveConfig();
     }
     @EventHandler
     public void OnDeath(PlayerDeathEvent e){
-        if(!LimitedLife.mapLives.containsKey(e.getPlayer().getUniqueId())){
-            lives = defaultLives;
-            LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), defaultLives);
+        if(LimitedLife.instance.getConfig().getString("player." + e.getPlayer().getUniqueId().toString()) == null){ ////////////////
+            LimitedLife.instance.getConfig().set("player." + e.getPlayer().getUniqueId().toString(), defaultLives); ////////////////
         }
-        lives = LimitedLife.mapLives.get(e.getPlayer().getUniqueId()) - 1;
-        LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), lives);
-        if(lives <= 0){
-            e.getPlayer().setGameMode(GameMode.SPECTATOR);
-            LifeCommand.noLifes(e.getPlayer());
+        LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), LimitedLife.instance.getConfig().getInt("player." + e.getPlayer().getUniqueId().toString())); ////////////////
+        if(lives > 0){
+            lives = LimitedLife.mapLives.get(e.getPlayer().getUniqueId()) - 1;
         }else{
-            LifeCommand.deathMessage(e.getPlayer(), lives);
+            e.getPlayer().setGameMode(GameMode.SPECTATOR);
         }
+        LimitedLife.mapLives.put(e.getPlayer().getUniqueId(), lives);
+        LifeCommand.sendLives(e.getPlayer(), lives);
+        LimitedLife.instance.getConfig().set("player." + e.getPlayer().getUniqueId().toString(),  LimitedLife.mapLives.get(e.getPlayer().getUniqueId())); //////////////////////////////////////
+        LimitedLife.instance.saveConfig();
     }
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e){
